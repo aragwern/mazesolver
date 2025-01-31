@@ -52,12 +52,13 @@ class Cell:
         xB, yB = to_cell.get_center_coordinates()
         path = Line(Point(xA, yA), Point(xB, yB))
         if not undo:
-            self._win.draw_line(path, fill_color="red")
+            fill_color = "red"
         else:
-            self._win.draw_line(path, fill_color="gray")
+            fill_color = "gray"
+        self._win.draw_line(path, fill_color=fill_color)
 
 
     def get_center_coordinates(self):
-        x = self._x1 + ((self._x2 - self._x1) / 2)
-        y = self._y1 + ((self._y2 - self._y1) / 2)
+        x = self._x1 + (abs(self._x2 - self._x1) // 2)
+        y = self._y1 + (abs(self._y2 - self._y1) // 2)
         return x, y
