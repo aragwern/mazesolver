@@ -14,6 +14,9 @@ class Cell:
         self._win = win
 
     def draw(self, **kwargs):
+        if self._win is None:
+            return
+        
         self._x1 = kwargs.get('x1', 0)
         self._y1 = kwargs.get('y1', 0)
         self._x2 = kwargs.get('x2', 0)
@@ -43,3 +46,18 @@ class Cell:
                 Point(self._x1, self._y2)
                 )
             self._win.draw_line(bottom_wall)
+
+    def draw_move(self, to_cell, undo=False):
+        xA, yA = self.get_center_coordinates()
+        xB, yB = to_cell.get_center_coordinates()
+        path = Line(Point(xA, yA), Point(xB, yB))
+        if not undo:
+            self._win.draw_line(path, fill_color="red")
+        else:
+            self._win.draw_line(path, fill_color="gray")
+
+
+    def get_center_coordinates(self):
+        x = self._x1 + ((self._x2 - self._x1) / 2)
+        y = self._y1 + ((self._y2 - self._y1) / 2)
+        return x, y
