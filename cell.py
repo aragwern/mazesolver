@@ -22,30 +22,42 @@ class Cell:
         self._x2 = kwargs.get('x2', 0)
         self._y2 = kwargs.get('y2', 0)
 
+        left_wall = Line(
+                Point(self._x1, self._y1),
+                Point(self._x1, self._y2)
+            )
         if self.has_left_wall:
-            left_wall = Line(
-                Point(self._x1, self._y1),
-                Point(self._x1, self._y2)
-            )
             self._win.draw_line(left_wall)
-        if self.has_right_wall:
-            right_wall = Line(
+        else:
+            self._win.draw_line(left_wall, "white")
+
+        right_wall = Line(
                 Point(self._x2, self._y2),
                 Point(self._x2, self._y1)
             )
+        if self.has_right_wall:
             self._win.draw_line(right_wall)
-        if self.has_top_wall:
-            top_wall = Line(
+        else:
+            self._win.draw_line(right_wall, "white")
+        
+        top_wall = Line(
                 Point(self._x1, self._y1),
                 Point(self._x2, self._y1)
             )
+        if self.has_top_wall:
             self._win.draw_line(top_wall)
-        if self.has_bottom_wall:
-            bottom_wall = Line(
+        else:
+            self._win.draw_line(top_wall, "white")
+
+        bottom_wall = Line(
                 Point(self._x2, self._y2),
                 Point(self._x1, self._y2)
             )
+        if self.has_bottom_wall:
             self._win.draw_line(bottom_wall)
+        else:
+            self._win.draw_line(bottom_wall, "white")
+
 
     def draw_move(self, to_cell, undo=False):
         xA, yA = self.get_center_coordinates()
