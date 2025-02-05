@@ -1,5 +1,6 @@
 from cell import Cell
 import time
+import random
 
 
 class Maze():
@@ -12,6 +13,7 @@ class Maze():
         cell_size_x,
         cell_size_y,
         win=None,
+        seed=None
     ):
         self._x1 = x1
         self._y1 = y1
@@ -22,6 +24,8 @@ class Maze():
         self._win = win
         self._cells = []
         self._create_cells()
+        if seed is not None:
+            random.seed(seed)
 
     def _create_cells(self):
         for i in range(self._num_cols):
@@ -50,12 +54,70 @@ class Maze():
         self._win.redraw()
         time.sleep(0.05)
 
-    
     def _break_entrance_and_exit(self):
-        entrance = self._cells[0][0]
-        exit = self._cells[self._num_cols-1][self._num_rows-1]
-        entrance.has_top_wall = False
-        self._draw_cell(0,0)
-        exit.has_bottom_wall = False
-        self._draw_cell(self._num_cols-1,self._num_rows-1)
+        entrance = {"i" : 0, "j" : 0}
+        exit = {"i" : self._num_cols - 1, "j" : self._num_rows - 1}
+        self._cells[entrance["i"]][entrance["j"]].has_top_wall = False
+        self._draw_cell(entrance["i"], entrance["j"])
+        self._cells[exit["i"]][exit["j"]].has_bottom_wall = False
+        self._draw_cell(exit["i"], exit["j"])
 
+    def _break_walls_r(self, i, j):
+        self._cells[i][j]._visited = True
+        while True:
+            to_visit = []
+            if i > 0:
+                left_neighbor = self._cells[i-1][j]
+                if not left_neighbor._visited:
+                    to_visit.append(("left", i-1, j))
+            if i < self._num_cols - 1:
+                right_neighbor = self._cells[i+1][j]
+                if not right_neighbor._visited:
+                    to_visit.append(("right", i+1, j))
+            if j > 0:
+                top_neighbor = self._cells[i][j-1]
+                if not top_neighbor._visited:
+                    to_visit.append(("top", i, j-1))
+            if j < self._num_rows - 1:
+                bottom_neighbor = self._cells[i][j+1]
+                if not bottom_neighbor._visited:
+                    to_visit.append(("bottom", i, j+1))
+            if not to_visit:
+                return
+            where_to_go = random.choice(to_visit)
+            direction = where_to_go[0]
+            next_cell = self._cells[where_to_go[1]][where_to_go[2]]
+            this_cell = self._cells[i][j]
+            match direction:
+                case "left":
+                    self._cells[i][j].has_left_wall = False
+                    self._draw_cell(i, j)
+                    self._cells[where_to_go[1]][where_to_go[2]].has_right_wall = False
+                    self._draw_cell(where_to_go[1], where_to_go[2])
+                case "right":
+                    self._cells[i][j].has_right_wall = False
+                    self._draw_cell(i, j)
+                    self._cells[where_to_go[1]][where_to_go[2]].has_left_wall = False
+                    self._draw_cell(where_to_go[1], where_to_go[2])
+                case "top":
+                    self._cells[i][j].has_top_wall = False
+                    self._draw_cell(i, j)
+                    self._cells[where_to_go[1]][where_to_go[2]].has_bottom_wall = False
+                    self._draw_cell(where_to_go[1], where_to_go[2])
+                case "bottom":
+                    self._cells[i][j].has_bottom_wall = False
+                    self._draw_cell(i, j)
+                    self._cells[where_to_go[1]][where_to_go[2]].has_top_wall = False
+                    self._draw_cell(where_to_go[1], where_to_go[2])
+            self._break_walls_r(where_to_go[1], where_to_go[2])
+
+    def _reset_cells_visited(self):
+        for i in range(self._num_cols):
+            for j in range(self._num_rows):
+                self._cells[i][j]._visited = False
+
+    def get_cell(self, row, col):
+        return self._cells[row][col]
+
+    def get_cells(self):
+        return self._cells

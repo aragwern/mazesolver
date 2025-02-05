@@ -12,6 +12,7 @@ class Cell:
         self._x2 = None
         self._y2 = None
         self._win = win
+        self._visited = False
 
     def draw(self, **kwargs):
         if self._win is None:
@@ -73,3 +74,9 @@ class Cell:
         x = self._x1 + (abs(self._x2 - self._x1) // 2)
         y = self._y1 + (abs(self._y2 - self._y1) // 2)
         return x, y
+
+    def visit(self):
+        self._visited = True
+
+    def visited(self):
+        return self._visited
