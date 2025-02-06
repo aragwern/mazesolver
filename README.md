@@ -1,1 +1,3 @@
 # mazesolver
+
+![mazesolver](mazesolver.png)
