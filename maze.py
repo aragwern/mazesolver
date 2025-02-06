@@ -121,3 +121,42 @@ class Maze():
 
     def get_cells(self):
         return self._cells
+
+    def solve(self):
+        return self._solver_r(0, 0)
+
+    def _solver_r(self, i, j):
+        directions = [("left", -1,0), ("right", 1,0), ("top", 0,-1), ("bottom", 0,1)]
+        self._animate()
+        self._cells[i][j].visit()
+        if i == self._num_cols - 1 and j == self._num_rows - 1:
+            return True
+        for direction in directions:
+            if (
+                i + direction[1] < 0 or
+                i + direction[1] > self._num_cols - 1 or
+                j + direction[2] < 0 or
+                j + direction[2] > self._num_rows - 1
+            ):
+                continue
+            this_cell = self._cells[i][j]
+            next_cell = self._cells[i + direction[1]][j + direction[2]]
+            match direction[0]:
+                case "left":
+                    if this_cell.has_left_wall or next_cell.has_right_wall:
+                        continue
+                case "right":
+                    if this_cell.has_right_wall or next_cell.has_left_wall:
+                        continue
+                case "top":
+                    if this_cell.has_top_wall or next_cell.has_bottom_wall:
+                        continue
+                case "bottom":
+                    if this_cell.has_bottom_wall or next_cell.has_top_wall:
+                        continue
+            if next_cell.visited():
+                continue
+            this_cell.draw_move(next_cell)
+            if self._solver_r(i + direction[1], j + direction[2]):
+                return True
+            this_cell.draw_move(next_cell, undo=True)

@@ -67,7 +67,7 @@ class Cell:
         if not undo:
             fill_color = "red"
         else:
-            fill_color = "gray"
+            fill_color = "lightgray"
         self._win.draw_line(path, fill_color=fill_color)
 
     def get_center_coordinates(self):
